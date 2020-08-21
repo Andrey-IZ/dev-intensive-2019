@@ -36,6 +36,50 @@ data class User(
         isOnline:  $isOnline
     """.trimIndent())
 
+    class Builder{
+        private lateinit var user: User
+
+        fun id(id: String): Builder {
+            user = User(id)
+            return this
+        }
+
+        fun firstName(firstName: String?): Builder {
+            user.firstName = firstName
+            return this
+        }
+        fun lastName(lastName: String?): Builder {
+            user.lastName = lastName
+            return this
+        }
+
+        fun avatar(path: String?): Builder {
+            user.avatar = path
+            return this
+        }
+
+        fun rating(rating: Int): Builder {
+            user.rating = rating
+            return this
+        }
+        fun respect(respect: Int): Builder {
+            user.respect = respect
+            return this
+        }
+        fun lastVisit(lastVisit: Date): Builder {
+            user.lastVisit = lastVisit
+            return this
+        }
+        fun isOnline(isOnline: Boolean): Builder {
+            user.isOnline = isOnline
+            return this
+        }
+
+        fun build(): User {
+            return user
+        }
+    }
+
     companion object Factory {
         private var lastId: Int = -1
         fun makeUser(fullname: String?) : User{
