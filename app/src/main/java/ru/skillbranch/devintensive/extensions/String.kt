@@ -7,3 +7,10 @@ fun String.truncate(count: Int = 16): String {
     }
     return string
 }
+
+fun String.stripHtml(): String {
+    return this
+        .replace("&", "")
+        .replace(Regex("<[\\w\\s=\"/]+?>"), "")
+        .replace(Regex("\\p{Space}{2,}?"), "")
+}
