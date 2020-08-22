@@ -41,17 +41,17 @@ fun Date.humanizeDiff(date:Date = Date()): String {
         in 45*SECOND..75*SECOND ->  timeConvertStr(time,"минуту")
         in 75*SECOND..45*MINUTE ->  {
             val value = ceil((timeAbs / MINUTE.toDouble())).toInt()
-            timeConvertStr(time,"$value ${TimeUnits.MINUTE.plural(value)}")
+            timeConvertStr(time,"${TimeUnits.MINUTE.plural(value)}")
         }
         in 45*MINUTE..75*MINUTE ->  timeConvertStr(time,"час")
         in 75* MINUTE..22*HOUR ->   {
             val value = ceil((timeAbs / HOUR.toDouble())).toInt()
-            timeConvertStr(time,"$value ${TimeUnits.HOUR.plural(value)}")
+            timeConvertStr(time,"${TimeUnits.HOUR.plural(value)}")
         }
         in 22* HOUR..26*HOUR ->     timeConvertStr(time,"день")
         in 26* HOUR..360*DAY ->     {
             val value = ceil((timeAbs / DAY.toDouble())).toInt()
-            timeConvertStr(time,"$value ${TimeUnits.DAY.plural(value)}")
+            timeConvertStr(time,"${TimeUnits.DAY.plural(value)}")
         }
         else ->                     if (time >= 0) "более чем через год" else "более года назад"
 
@@ -61,39 +61,43 @@ fun Date.humanizeDiff(date:Date = Date()): String {
 enum class TimeUnits {
     SECOND {
         override fun plural(value:Int):String {
-            return when(getNumber(value)) {
+            val text = when(getNumber(value)) {
                 1 -> "секунду"
                 in 2..4 -> "секунды"
                 else -> "секунд"
             }
+            return "$value $text"
     }},
     MINUTE {
         override fun plural(value:Int):String {
-            return when(getNumber(value)) {
+            val text = when(getNumber(value)) {
                 1 -> "минуту"
                 in 2..4 -> "минуты"
                 else -> "минут"
             }
+            return "$value $text"
         }},
     HOUR {
         override fun plural(value:Int):String {
-            return when(getNumber(value)) {
+            val text = when(getNumber(value)) {
                 1 -> "час"
                 in 2..4 -> "часа"
                 else -> "часов"
             }
+            return "$value $text"
         }},
     DAY {
         override fun plural(value:Int):String {
-            return when(getNumber(value)) {
+            val text = when(getNumber(value)) {
                 1 -> "день"
                 in 2..4 -> "дня"
                 else -> "дней"
             }
+            return "$value $text"
         }};
     abstract fun plural(value:Int):String
 
     protected fun getNumber(value:Int): Int {
-        return if (value >= 10) ((value / 10.0) % 1).toInt() else value
+        return if (value >= 10) ceil(((value / 10.0) % 1)*10).toInt() else value
     }
 }
