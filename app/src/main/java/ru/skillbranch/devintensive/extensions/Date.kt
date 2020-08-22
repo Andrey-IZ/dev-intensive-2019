@@ -41,17 +41,17 @@ fun Date.humanizeDiff(date:Date = Date()): String {
         in 45*SECOND..75*SECOND ->  timeConvertStr(time,"минуту")
         in 75*SECOND..45*MINUTE ->  {
             val value = ceil((timeAbs / MINUTE.toDouble())).toInt()
-            timeConvertStr(time,"${TimeUnits.MINUTE.plural(value)}")
+            timeConvertStr(time, TimeUnits.MINUTE.plural(value))
         }
         in 45*MINUTE..75*MINUTE ->  timeConvertStr(time,"час")
         in 75* MINUTE..22*HOUR ->   {
             val value = ceil((timeAbs / HOUR.toDouble())).toInt()
-            timeConvertStr(time,"${TimeUnits.HOUR.plural(value)}")
+            timeConvertStr(time, TimeUnits.HOUR.plural(value))
         }
         in 22* HOUR..26*HOUR ->     timeConvertStr(time,"день")
         in 26* HOUR..360*DAY ->     {
             val value = ceil((timeAbs / DAY.toDouble())).toInt()
-            timeConvertStr(time,"${TimeUnits.DAY.plural(value)}")
+            timeConvertStr(time, TimeUnits.DAY.plural(value))
         }
         else ->                     if (time >= 0) "более чем через год" else "более года назад"
 
