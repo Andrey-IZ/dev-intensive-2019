@@ -1,5 +1,7 @@
 package ru.skillbranch.devintensive.models
 
+import java.util.*
+
 class Bender(
         var status: Status = Status.NORMAL,
         var question: Question = Question.NAME
@@ -14,33 +16,39 @@ class Bender(
     }
 
     fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        return if (question.answers.contains(answer)) {
+        return if (question.answers.contains(answer.toLowerCase(Locale.ROOT))) {
             question = question.nextQuestion()
-            "Отлично - это правильный ответ!\n ${question.question}" to status.color
+            "Отлично - ты справился\n${question.question}" to status.color
         } else {
-            status = status.nextStatus()
-            "Это не правильный ответ!\n ${question.question}" to status.color
+            return if (status == Status.CRITICAL) {
+                status = Status.NORMAL
+                question = Question.NAME
+                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
+            } else {
+                status = status.nextStatus()
+                "Это неправильный ответ\n${question.question}" to status.color
+            }
         }
     }
 
     enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("бендер", "bender")) {
+        NAME("Как меня зовут?", listOf("Бендер", "bender")) {
             override fun nextQuestion():Question=PROFESSION
         },
         PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")){
-            override fun nextQuestion():Question=PROFESSION
-        },
-        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood", "bender")){
             override fun nextQuestion():Question=MATERIAL
         },
-        BDAY("Когда меня сделали?", listOf("2993")){
+        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood", "bender")){
             override fun nextQuestion():Question=BDAY
         },
-        SERIAL("Мой серийны номер?", listOf("271564168")){
+        BDAY("Когда меня сделали?", listOf("2993")){
             override fun nextQuestion():Question=SERIAL
         },
+        SERIAL("Мой серийны номер?", listOf("2716057")){
+            override fun nextQuestion():Question=IDLE
+        },
         IDLE("На этом все, вопросов больше нет", emptyList()){
-            override fun nextQuestion():Question=NAME
+            override fun nextQuestion():Question=IDLE
         };
 
         abstract fun nextQuestion():Question
