@@ -11,6 +11,6 @@ fun String.truncate(count: Int = 16): String {
 fun String.stripHtml(): String {
     return this
         .replace("&", "")
-        .replace(Regex("<[\\w\\s=\"/]+?>"), "")
-        .replace(Regex("\\p{Space}{2,}?"), "")
+        .replace(Regex("<[\\w\\s=\"/\\\\]+?>"), "")
+        .replace(Regex("\\s+"), " ")
 }

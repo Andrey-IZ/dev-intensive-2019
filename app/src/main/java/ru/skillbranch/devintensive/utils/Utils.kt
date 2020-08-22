@@ -64,14 +64,16 @@ object Utils {
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? {
-
-        if (firstName.isNullOrEmpty() || firstName.trim().isEmpty())
-            return null
-
-        var result:String = firstName.take(1).capitalize()
-        lastName?.let {
-            result += it.take(1).capitalize()
+        var result = ""
+        if (!(firstName.isNullOrEmpty() || firstName.trim().isEmpty())) {
+            result += firstName.take(1).capitalize()
         }
-        return result
+        if (!(lastName.isNullOrEmpty() || lastName.trim().isEmpty())) {
+            result += lastName.take(1).capitalize()
+        }
+
+        if (result.isNotEmpty())
+            return result
+        return null
     }
 }
