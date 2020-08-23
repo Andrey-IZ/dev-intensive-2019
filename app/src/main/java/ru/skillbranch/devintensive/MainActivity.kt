@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var textTxt: TextView
     private lateinit var messageEt: EditText
     private lateinit var sendBtn: ImageView
-    private lateinit var bender: Bender
+    private lateinit var benderObj: Bender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +34,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         val status = savedInstanceState?.getString("STATUS") ?: Bender.Status.NORMAL.name
         val question = savedInstanceState?.getString("QUESTION") ?: Bender.Question.NAME.name
-        bender = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
+        benderObj = Bender(Bender.Status.valueOf(status), Bender.Question.valueOf(question))
 
-        val (r,g,b) = bender.status.color
+        val (r,g,b) = benderObj.status.color
         benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
-        textTxt.text = bender.askQuestion()
+        textTxt.text = benderObj.askQuestion()
         sendBtn.setOnClickListener(this)
 
         messageEt.setOnEditorActionListener { v, actionId, event ->
@@ -55,18 +55,43 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("STATUS", bender.status.name)
-        outState.putString("QUESTION", bender.question.name)
-        Log.d("M_MainActivity", "onSaveInstanceState ${bender.status.name}, ${bender.question.name}")
+        outState.putString("STATUS", benderObj.status.name)
+        outState.putString("QUESTION", benderObj.question.name)
+        Log.d("M_MainActivity", "onSaveInstanceState ${benderObj.status.name}, ${benderObj.question.name}")
     }
 
     override fun onClick(v: View?) {
         if (v?.id == R.id.iv_send) {
-            val (phrase, color) = bender.listenAnswer(messageEt.text.toString())
+            val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString())
             messageEt.setText("")
             val (r,g,b) = color
             benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
             textTxt.text = phrase
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("M_MainActivity", "onStart: ${benderObj.question}, ${benderObj.status}")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("M_MainActivity", "onResume: ${benderObj.question}, ${benderObj.status}")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("M_MainActivity", "onPause: ${benderObj.question}, ${benderObj.status}")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("M_MainActivity", "onStop: ${benderObj.question}, ${benderObj.status}")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("M_MainActivity", "onDestroy: ${benderObj.question}, ${benderObj.status}")
     }
 }
