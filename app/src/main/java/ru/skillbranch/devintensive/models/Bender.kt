@@ -71,12 +71,12 @@ class Bender(
         BDAY("Когда меня сделали?", listOf("2993")) {
             override fun nextQuestion(): Question = SERIAL
             override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer.all { it.isDigit() })
+                if (answer.isNotEmpty() && !answer.all { it.isDigit() })
                     return "Год моего рождения должен содержать только цифры"
                 return null
             }
         },
-        SERIAL("Мой серийны номер?", listOf("2716057")) {
+        SERIAL("Мой серийный номер?", listOf("2716057")) {
             override fun nextQuestion(): Question = IDLE
             override fun validation(answer: String): String? {
                 if (answer.isNotEmpty() && answer.all { it.isDigit() }
