@@ -18,7 +18,7 @@ class Bender(
     fun listenAnswer(answer:String):Pair<String, Triple<Int, Int, Int>>{
         return when(question){
             Question.IDLE -> question.question to status.color
-            else -> "${checkAnswer(answer)}\n${question.question}" to status.color
+            else -> "${checkAnswer(answer.toLowerCase())}\n${question.question}" to status.color
         }
     }
 
@@ -45,7 +45,7 @@ class Bender(
     }
 
     enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("Бендер", "bender")) {
+        NAME("Как меня зовут?", listOf("бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
             override fun validate(answer: String): Boolean =
                     answer.trim().firstOrNull()?.isUpperCase() ?: false
@@ -60,7 +60,7 @@ class Bender(
             override fun validate(answer: String): Boolean =
                     answer.trim().all { it.isLetter() }
         },
-        BDAY("Когда меня сделали?", listOf("2993")) {
+        BDAY("Когда меня создали?", listOf("2993")) {
             override fun nextQuestion(): Question = SERIAL
             override fun validate(answer: String):  Boolean =
                     answer.trim().contains(Regex("^[0-9]*$"))
@@ -83,7 +83,7 @@ class Bender(
         NORMAL(Triple(255, 255, 255)),
         WARNING(Triple(255, 120, 0)),
         DANGER(Triple(255, 60, 60)),
-        CRITICAL(Triple(255, 255, 0));
+        CRITICAL(Triple(255, 0, 0));
 
         fun nextStatus(): Status {
             return if (this.ordinal < values().lastIndex) {
