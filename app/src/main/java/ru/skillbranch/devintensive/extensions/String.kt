@@ -8,9 +8,8 @@ fun String.truncate(count: Int = 16): String {
     return string
 }
 
-fun String.stripHtml(): String {
-    return this
-        .replace("&", "")
-        .replace(Regex("<[\\w\\s=\"/\\\\]+?>"), "")
-        .replace(Regex("\\s+"), " ")
+fun String.stripHtml(): String{
+    val htmlRegex = Regex("(<.*?>)|(&[^ а-я]{1,4}?;)")
+    val spaceRegex = Regex(" {2,}")
+    return this.replace(htmlRegex, "").replace(spaceRegex, " ")
 }
