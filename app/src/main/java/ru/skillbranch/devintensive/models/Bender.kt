@@ -34,8 +34,9 @@ class Bender(
                 if (isValid) {
                     if(question != Question.IDLE) {
                         status = status.nextStatus()
+                    } else {
+                        return question.question to status.color
                     }
-                    return question.question to status.color
                 }
                 return "Это неправильный ответ\n${question.question}" to status.color
             }
@@ -70,7 +71,7 @@ class Bender(
         BDAY("Когда меня сделали?", listOf("2993")) {
             override fun nextQuestion(): Question = SERIAL
             override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer.isDigitsOnly())
+                if (answer.isNotEmpty() && answer.all { it.isDigit() })
                     return "Год моего рождения должен содержать только цифры"
                 return null
             }
@@ -78,8 +79,8 @@ class Bender(
         SERIAL("Мой серийны номер?", listOf("2716057")) {
             override fun nextQuestion(): Question = IDLE
             override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer.isDigitsOnly()
-                        && answer.length == 7 )
+                if (answer.isNotEmpty() && answer.all { it.isDigit() }
+                        && answer.length != 7 )
                     return "Серийный номер содержит только цифры, и их 7"
                 return null
             }
