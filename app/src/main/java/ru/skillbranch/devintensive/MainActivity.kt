@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -13,6 +14,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.skillbranch.devintensive.extensions.hideKeyboard
 import ru.skillbranch.devintensive.models.Bender
+import ru.skillbranch.devintensive.models.Bender.Question
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -40,16 +42,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         textTxt.text = benderObj.askQuestion()
         sendBtn.setOnClickListener(this)
 
-        messageEt.setOnEditorActionListener { v, actionId, event ->
-            return@setOnEditorActionListener when(actionId) {
-                EditorInfo.IME_ACTION_DONE -> {
-                    this.hideKeyboard()
-                    sendBtn.performClick()
-                    true
-                }
-                else -> false
-            }
-        }
+        makeSendOnActionDone(messageEt)
         Log.d("M_MainActivity", "onCreate: ${benderObj.question}, ${benderObj.status}")
     }
 
@@ -61,13 +54,43 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        if (v?.id == R.id.iv_send) {
-            val (phrase, color) = benderObj.listenAnswer(messageEt.text.toString())
-            messageEt.setText("")
-            val (r,g,b) = color
-            benderImage.setColorFilter(Color.rgb(r,g,b), PorterDuff.Mode.MULTIPLY)
-            textTxt.text = phrase
+        if (v?.id == R.id.iv_send)
+            if (isAnswerValid())
+                sendAnswer()
+            else makeErrorMessage()
+    }
+
+    private fun makeSendOnActionDone(editText: EditText) {
+        editText.setRawInputType(InputType.TYPE_CLASS_TEXT)
+        editText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) sendBtn.performClick()
+            false
         }
+    }
+
+    private fun makeErrorMessage() {
+        val errorMessage = when(benderObj.question){
+            Question.NAME -> "Имя должно начинаться с заглавной буквы"
+            Question.PROFESSION -> "Профессия должна начинаться со строчной буквы"
+            Question.MATERIAL -> "Материал не должен содержать цифр"
+            Question.BDAY -> "Год моего рождения должен содержать только цифры"
+            Question.SERIAL -> "Серийный номер содержит только цифры, и их 7"
+            else -> "На этом все, вопросов больше нет"
+        }
+        textTxt.text = "$errorMessage\n${benderObj.question.question}"
+        messageEt.setText("")
+    }
+
+    private fun isAnswerValid(): Boolean {
+        return benderObj.question.validate(messageEt.text.toString())
+    }
+
+    private fun sendAnswer() {
+        val (phase, color) = benderObj.listenAnswer(messageEt.text.toString().toLowerCase())
+        messageEt.setText("")
+        val(r, g, b) = color
+        benderImage.setColorFilter(Color.rgb(r, g, b), PorterDuff.Mode.MULTIPLY)
+        textTxt.text = phase
     }
 
     override fun onStart() {

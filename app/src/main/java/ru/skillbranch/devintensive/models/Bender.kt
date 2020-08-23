@@ -1,6 +1,5 @@
 package ru.skillbranch.devintensive.models
 
-import androidx.core.text.isDigitsOnly
 import java.util.*
 
 class Bender(
@@ -16,84 +15,68 @@ class Bender(
         Question.IDLE -> Question.IDLE.question
     }
 
-    fun listenAnswer(answer: String): Pair<String, Triple<Int, Int, Int>> {
-        val getCritics = question.validation(answer)
-        val isValid = getCritics == null
-        if (!isValid)
-            return "$getCritics\n${question.question}" to status.color
+    fun listenAnswer(answer:String):Pair<String, Triple<Int, Int, Int>>{
+        return when(question){
+            Question.IDLE -> question.question to status.color
+            else -> "${checkAnswer(answer)}\n${question.question}" to status.color
+        }
+    }
 
-        return if (question.answers.contains(answer.toLowerCase(Locale.ROOT))) {
+    private fun checkAnswer(answer: String): String {
+        return if (question.answers.contains(answer)) {
             question = question.nextQuestion()
-            "Отлично - ты справился\n${question.question}" to status.color
-        } else {
-            return if (status == Status.CRITICAL) {
-                status = Status.NORMAL
-                question = Question.NAME
-                "Это неправильный ответ. Давай все по новой\n${question.question}" to status.color
-            } else {
-                if (isValid) {
-                    if(question != Question.IDLE) {
-                        status = status.nextStatus()
-                    } else {
-                        return question.question to status.color
-                    }
-                }
-                return "Это неправильный ответ\n${question.question}" to status.color
+            "Отлично - ты справился"
+        }
+        else {
+            if (status == Status.CRITICAL){
+                resetStates()
+                "Это неправильный ответ. Давай все по новой"
+            }
+            else{
+                status = status.nextStatus()
+                "Это неправильный ответ"
             }
         }
+    }
+
+    private fun resetStates() {
+        status = Status.NORMAL
+        question = Question.NAME
     }
 
     enum class Question(val question: String, val answers: List<String>) {
         NAME("Как меня зовут?", listOf("Бендер", "bender")) {
             override fun nextQuestion(): Question = PROFESSION
-            override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer[0].isLowerCase())
-                    return "Имя должно начинаться с заглавной буквы"
-                return null
-            }
+            override fun validate(answer: String): Boolean =
+                    answer.trim().firstOrNull()?.isUpperCase() ?: false
         },
         PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
             override fun nextQuestion(): Question = MATERIAL
-            override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer[0].isUpperCase())
-                    return "Профессия должна начинаться со строчной буквы"
-                return null
-            }
+            override fun validate(answer: String): Boolean =
+                    answer.trim().firstOrNull()?.isLowerCase() ?: false
         },
         MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood", "bender")) {
             override fun nextQuestion(): Question = BDAY
-            override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer.any { it.isDigit() })
-                    return "Материал не должен содержать цифр"
-                return null
-            }
+            override fun validate(answer: String): Boolean =
+                    answer.trim().all { it.isLetter() }
         },
         BDAY("Когда меня сделали?", listOf("2993")) {
             override fun nextQuestion(): Question = SERIAL
-            override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && !answer.all { it.isDigit() })
-                    return "Год моего рождения должен содержать только цифры"
-                return null
-            }
+            override fun validate(answer: String):  Boolean =
+                    answer.trim().contains(Regex("^[0-9]*$"))
         },
         SERIAL("Мой серийный номер?", listOf("2716057")) {
             override fun nextQuestion(): Question = IDLE
-            override fun validation(answer: String): String? {
-                if (answer.isNotEmpty() && answer.all { it.isDigit() }
-                        && answer.length != 7 )
-                    return "Серийный номер содержит только цифры, и их 7"
-                return null
-            }
+            override fun validate(answer: String): Boolean =
+                    answer.trim().contains(Regex("^[0-9]{7}$"))
         },
         IDLE("На этом все, вопросов больше нет", emptyList()) {
             override fun nextQuestion(): Question = IDLE
-            override fun validation(answer: String): String? {
-                return null
-            }
+            override fun validate(answer: String): Boolean = true
         };
 
         abstract fun nextQuestion(): Question
-        abstract fun validation(answer: String): String?
+        abstract fun validate(answer: String): Boolean
     }
 
     enum class Status(val color: Triple<Int, Int, Int>) {

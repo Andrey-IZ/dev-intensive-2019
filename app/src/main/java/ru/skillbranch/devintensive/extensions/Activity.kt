@@ -6,7 +6,7 @@ import android.graphics.Rect
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 fun Activity.hideKeyboard() {
@@ -18,26 +18,16 @@ fun Activity.hideKeyboard() {
     }
 }
 
-private fun Activity.getRootView(): View {
-    return findViewById<View>(android.R.id.content)
-}
-
-fun Activity.convertDpToPx(dp: Float): Float {
-    return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp,
-            this.resources.displayMetrics
-    )
-}
-
 fun Activity.isKeyboardOpen(): Boolean {
+    val rootView = findViewById<View>(android.R.id.content)
     val visibleBounds = Rect()
-    this.getRootView().getWindowVisibleDisplayFrame(visibleBounds)
-    val heightDiff = getRootView().height - visibleBounds.height()
-    val marginOfError = this.convertDpToPx(50F).roundToInt()
+    rootView.getWindowVisibleDisplayFrame(visibleBounds)
+    val heightDiff = rootView.height - visibleBounds.height()
+    val marginOfError = this.convertDpToPx(50F).roundToLong()
+
     return heightDiff > marginOfError
 }
 
 fun Activity.isKeyboardClosed(): Boolean {
-    return !this.isKeyboardOpen()
+    return this.isKeyboardOpen().not()
 }
