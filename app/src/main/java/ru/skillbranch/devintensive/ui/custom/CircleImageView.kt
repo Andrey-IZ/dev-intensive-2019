@@ -37,13 +37,13 @@ class CircleImageView @JvmOverloads constructor (
     private val srcInMode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
 
     init {
-//        attrs?.let {
-//            val attrVal = context.obtainStyledAttributes(attrs,
-//            R.styleable.CircleImageView)
-//            borderColor = attrVal.getColor(R.styleable.CircleImageView_cv_borderColor, DEFAULT_BORDER_COLOR)
-//            borderWidth = attrVal.getDimensionPixelSize(R.styleable.CircleImageView_cv_borderWidth, borderWidth)
-//            attrVal.recycle()
-//        }
+        attrs?.let {
+            val attrVal = context.obtainStyledAttributes(attrs,
+            R.styleable.CircleImageView)
+            borderColor = attrVal.getColor(R.styleable.CircleImageView_cv_borderColor, DEFAULT_BORDER_COLOR)
+            borderWidth = attrVal.getDimensionPixelSize(R.styleable.CircleImageView_cv_borderWidth, borderWidth)
+            attrVal.recycle()
+        }
         borderPaint.style = Paint.Style.STROKE
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
     }
@@ -51,8 +51,7 @@ class CircleImageView @JvmOverloads constructor (
     @Dimension(unit = DP)
     fun getBorderWidth(): Int = Utils.convertPxToDp(context, borderWidth)
 
-    @Dimension(unit = DP)
-    fun setBorderWidth(dp: Int) {
+    fun setBorderWidth(@Dimension dp: Int) {
         borderWidth = Utils.convertDpToPx(context, dp.toFloat())
         this.invalidate()
     }
@@ -65,10 +64,10 @@ class CircleImageView @JvmOverloads constructor (
         this.invalidate()
     }
 
-//    fun setBorderColor(@ColorRes colorId: Int) {
-//        borderColor = ContextCompat.getColor(App.applicationContext(), colorId)
-//        this.invalidate()
-//    }
+    fun setBorderColor(@ColorRes colorId: Int) {
+        borderColor = ContextCompat.getColor(App.applicationContext(), colorId)
+        this.invalidate()
+    }
 
     override fun onDraw(canvas: Canvas) {
         if (width == 0 || height == 0) return
