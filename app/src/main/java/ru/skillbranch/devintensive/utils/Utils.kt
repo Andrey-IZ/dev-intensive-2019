@@ -1,7 +1,9 @@
 package ru.skillbranch.devintensive.utils
 
+import android.content.Context
 import java.util.*
 import kotlin.collections.HashSet
+import kotlin.math.roundToInt
 
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
@@ -13,7 +15,7 @@ object Utils {
         return firstName to lastName
     }
 
-    fun transliteration(payload:String, divider:String = " ") :String {
+    fun transliteration(payload:String, divider:String = " "): String {
         val dict = mapOf(
             "а" to "a",
             "б" to "b",
@@ -75,5 +77,17 @@ object Utils {
         if (result.isNotEmpty())
             return result
         return null
+    }
+
+    fun convertPxToDp(context: Context, px: Int): Int {
+        return (px / context.resources.displayMetrics.density).roundToInt()
+    }
+
+    fun convertDpToPx(context: Context, dp: Float): Int {
+        return (dp * context.resources.displayMetrics.density).roundToInt()
+    }
+
+    fun convertSpToPx(context: Context, sp: Int): Int {
+        return sp * context.resources.displayMetrics.scaledDensity.roundToInt()
     }
 }
