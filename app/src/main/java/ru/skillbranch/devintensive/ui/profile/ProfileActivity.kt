@@ -10,7 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
@@ -37,11 +37,11 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         viewModel.getProfileData().observe(this, { updateUI(it) })
         viewModel.getTheme().observe(this, { updateTheme(it) })
-        viewModel.getRepositoryError().observe(this, Observer { updateRepoError(it) })
-        viewModel.getIsRepoError().observe(this, Observer { updateRepository(it) })
+        viewModel.getRepositoryError().observe(this, { updateRepoError(it) })
+        viewModel.getIsRepoError().observe(this, { updateRepository(it) })
     }
 
     private fun updateRepository(isError: Boolean) {
@@ -53,7 +53,7 @@ class ProfileActivity : AppCompatActivity() {
         wr_repository.error = if (isError) "Невалидный адрес репозитория" else null
     }
     private fun updateTheme(mode: Int) {
-        delegate.localNightMode = mode
+        delegate.setLocalNightMode(mode)
     }
 
     private fun updateUI(profile: Profile) {
