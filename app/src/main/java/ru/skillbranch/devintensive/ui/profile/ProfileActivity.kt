@@ -38,12 +38,12 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        viewModel.getProfileData().observe(this, { updateUI(it) })
-        viewModel.getTheme().observe(this, { updateTheme(it) })
-        viewModel.getRepositoryError().observe(this, { updateRepoError(it) })
-        viewModel.getIsRepoError().observe(this, { updateRepository(it) })
+        viewModel.getProfileData().observe(this, Observer { updateUI(it) })
+        viewModel.getTheme().observe(this, Observer { updateTheme(it) })
+        viewModel.getRepositoryError().observe(this, Observer { updateRepoError(it) })
+        viewModel.getIsRepoError().observe(this, Observer { updateRepository(it) })
     }
-
+    
     private fun updateRepository(isError: Boolean) {
         if (isError) et_repository.text.clear()
     }
