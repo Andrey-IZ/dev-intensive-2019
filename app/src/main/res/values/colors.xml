@@ -4,12 +4,28 @@
     <color name="color_primary_dark">#1C0E42</color>
     <color name="color_primary_light">#473770</color>
     <color name="color_accent">#FC4C4C</color>
-    <color name="color_accent_night">#2196F3</color>
-    <color name="color_accent_secondary">#BEAC32EE</color>
-    <color name="color_gray">#9CA9BA</color>
-    <color name="color_gray_dark">#675F7F</color>
+    <color name="color_accent_night">#2196F3</color>//night
+    <color name="color_gray">#9CA9BA</color>//night
+    <color name="color_gray_dark">#675F7F</color>//night
     <color name="color_gray_light">#ECECEC</color>
 
+    <color name="color_accent_secondary">#BEAC32EE</color>
     <color name="color_divider_dark">#1F000000</color>
     <color name="color_divider_light">#1FFFFFFF</color>
+    <color name="color_indicator">#581F99</color>
+    <color name="color_green">#4FD149</color>
+    <color name="color_item_dark">#1D1D1D</color>
+    <color name="color_item_light">#FFFFFF</color>
+    <color name="color_toolbar_night">#272727</color>
+    <color name="color_snackbar_text_light">#FFFFFF</color>
+    <color name="color_snackbar_text_dark">#121212</color>
+
+    <!--AvatarImageView colors 00:41:38, 5 tutorial-->
+    <color name="color_avatar_1">#7BC862</color>
+    <color name="color_avatar_2">#E17076</color>
+    <color name="color_avatar_3">#FAA774</color>
+    <color name="color_avatar_4">#6EC9CB</color>
+    <color name="color_avatar_5">#65AADD</color>
+    <color name="color_avatar_6">#A695E7</color>
+    <color name="color_avatar_7">#EE7AAE</color>
 </resources>

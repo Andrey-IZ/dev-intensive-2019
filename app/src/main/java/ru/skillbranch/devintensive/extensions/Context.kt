@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.TypedValue
 
 fun Context.convertDpToPx (dp: Float): Float {
-    return TypedValue.applyDimension (
-            TypedValue.COMPLEX_UNIT_DIP ,
-            dp,
-            this. resources . displayMetrics
-    )
+    return TypedValue.applyDimension (TypedValue.COMPLEX_UNIT_DIP,dp,this.resources.displayMetrics)
+}
+
+fun Context.dpToPx(dp: Int): Float {
+    return dp.toFloat() * this.resources.displayMetrics.density
 }
