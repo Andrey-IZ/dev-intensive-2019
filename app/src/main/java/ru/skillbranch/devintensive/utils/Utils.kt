@@ -1,93 +1,124 @@
 package ru.skillbranch.devintensive.utils
 
-import android.content.Context
-import java.util.*
-import kotlin.collections.HashSet
-import kotlin.math.roundToInt
+import android.graphics.Color
+import android.util.Log
+import kotlin.random.Random
 
 object Utils {
     fun parseFullName(fullName: String?): Pair<String?, String?> {
-        if (fullName.isNullOrEmpty() || fullName.trim().isEmpty()) return Pair(null, null)
+        val trim = fullName?.trim()
 
-        val parts: List<String>? = fullName.split(" ")
-        val firstName = parts?.getOrNull(0)
-        val lastName = parts?.getOrNull(1)
+        val parts: List<String>? = trim?.split(" ")
+
+        var firstName = parts?.getOrNull(0)
+
+        var lastName = parts?.getOrNull(1)
+
+        if (firstName.isNullOrBlank()) firstName = null
+        if (lastName.isNullOrBlank()) lastName = null
         return firstName to lastName
     }
 
-    fun transliteration(payload:String, divider:String = " "): String {
-        val dict = mapOf(
-            "а" to "a",
-            "б" to "b",
-            "в" to "v",
-            "г" to "g",
-            "д" to "d",
-            "е" to "e",
-            "ё" to "e",
-            "ж" to "zh",
-            "з" to "z",
-            "и" to "i",
-            "й" to "i",
-            "к" to "k",
-            "л" to "l",
-            "м" to "m",
-            "н" to "n",
-            "о" to "o",
-            "п" to "p",
-            "р" to "r",
-            "с" to "s",
-            "т" to "t",
-            "у" to "u",
-            "ф" to "f",
-            "х" to "h",
-            "ц" to "c",
-            "ч" to "ch",
-            "ш" to "sh",
-            "щ" to "sh'",
-            "ъ" to "",
-            "ы" to "i",
-            "ь" to "",
-            "э" to "e",
-            "ю" to "yu",
-            "я" to "ya"
-        )
+    fun transliteration(payload: String, divider: String = " "): String {
+        val fullName: List<String> = payload.split(" ").filter { a -> a.isNotBlank() }
+        var res = ""
+        for (word: String in fullName) {
+            var sb = ""
+            val charArray = word.toCharArray()
+            for (ch: Char in charArray.iterator()) {
+                val char = when (ch) {
+                    'а' -> "a"
+                    'б' -> "b"
+                    'в' -> "v"
+                    'г' -> "g"
+                    'д' -> "d"
+                    'е' -> "e"
+                    'ё' -> "e"
+                    'ж' -> "zh"
+                    'з' -> "z"
+                    'и' -> "i"
+                    'й' -> "i"
+                    'к' -> "k"
+                    'л' -> "l"
+                    'м' -> "m"
+                    'н' -> "n"
+                    'о' -> "o"
+                    'п' -> "p"
+                    'р' -> "r"
+                    'с' -> "s"
+                    'т' -> "t"
+                    'у' -> "u"
+                    'ф' -> "f"
+                    'х' -> "h"
+                    'ц' -> "c"
+                    'ч' -> "ch"
+                    'ш' -> "sh"
+                    'щ' -> "sh'"
+                    'ъ' -> ""
+                    'ы' -> "i"
+                    'ь' -> ""
+                    'э' -> "e"
+                    'ю' -> "yu"
+                    'я' -> "ya"
 
-        return payload.map {
-            val char = it.toString()
-                if (char == " ")
-                    return@map divider
-                var newChar = dict[char.toLowerCase(Locale.getDefault())]
-                if (newChar.isNullOrEmpty()) return@map char
+                    'А' -> "A"
+                    'Б' -> "B"
+                    'В' -> "V"
+                    'Г' -> "G"
+                    'Д' -> "D"
+                    'Е' -> "E"
+                    'Ё' -> "E"
+                    'Ж' -> "Zh"
+                    'З' -> "Z"
+                    'И' -> "I"
+                    'Й' -> "I"
+                    'К' -> "K"
+                    'Л' -> "L"
+                    'М' -> "M"
+                    'Н' -> "N"
+                    'О' -> "O"
+                    'П' -> "P"
+                    'Р' -> "R"
+                    'С' -> "S"
+                    'Т' -> "T"
+                    'У' -> "U"
+                    'Ф' -> "F"
+                    'Х' -> "H"
+                    'Ц' -> "C"
+                    'Ч' -> "Ch"
+                    'Ш' -> "Sh"
+                    'Щ' -> "Sh'"
+                    'Ъ' -> ""
+                    'Ы' -> "I"
+                    'Ь' -> ""
+                    'Э' -> "E"
+                    'Ю' -> "Yu"
+                    'Я' -> "Ya"
+                    else -> ch.toString()
+                }
+                sb = "$sb$char"
+            }
+            res = when {
+                res.isNotBlank() -> "$res$divider$sb"
+                else -> "$res$sb"
+            }
+            /*if (res.isNotEmpty() || (res != " ")) res = "$res$divider$sb"
+            else res = "$res$sb"*/
+        }
 
-                if (it.isUpperCase())
-                    newChar = newChar.capitalize()
-                return@map newChar
-            }.joinToString("")
+        return res
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? {
-        var result = ""
-        if (!(firstName.isNullOrEmpty() || firstName.trim().isEmpty())) {
-            result += firstName.take(1).capitalize()
-        }
-        if (!(lastName.isNullOrEmpty() || lastName.trim().isEmpty())) {
-            result += lastName.take(1).capitalize()
-        }
-
-        if (result.isNotEmpty())
-            return result
-        return null
+        if (firstName == null && lastName == null) return null
+        val first = "${firstName?.firstOrNull() ?: ""}${lastName?.firstOrNull() ?: ""}"
+        val p = Regex("\\s")
+        if (first.matches(p)) return null
+        return first.toUpperCase()
     }
 
-    fun convertPxToDp(context: Context, px: Int): Int {
-        return (px / context.resources.displayMetrics.density).roundToInt()
-    }
-
-    fun convertDpToPx(context: Context, dp: Float): Int {
-        return (dp * context.resources.displayMetrics.density).roundToInt()
-    }
-
-    fun convertSpToPx(context: Context, sp: Int): Int {
-        return sp * context.resources.displayMetrics.scaledDensity.roundToInt()
+    fun randomColor(): Int {
+        val random = Random
+        return Color.argb(255, random.nextInt(255), random.nextInt(255), random.nextInt(255))
     }
 }

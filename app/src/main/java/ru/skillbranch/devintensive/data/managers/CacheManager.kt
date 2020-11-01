@@ -6,6 +6,7 @@ import ru.skillbranch.devintensive.models.data.Chat
 import ru.skillbranch.devintensive.models.data.User
 import ru.skillbranch.devintensive.utils.DataGenerator
 
+
 object CacheManager {
     private val chats = mutableLiveData(DataGenerator.stabChats)
     private val users = mutableLiveData(DataGenerator.stabUsers)
@@ -20,8 +21,8 @@ object CacheManager {
 
     fun nextChatId(): String {
         //return "${chats.value!!.size}"
-        val lastId = chats.value!!.last().id.toInt()
-        return (lastId + 1).toString()
+        val lastId = chats.value!!.last().id.toInt() + 1
+        return lastId.toString()
     }
 
     fun insertChat(chat : Chat) {

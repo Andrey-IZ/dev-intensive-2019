@@ -22,15 +22,5 @@
     <declare-styleable name="CircleImageView">
         <attr name="cv_borderColor" format="color"/>
         <attr name="cv_borderWidth" format="dimension"/>
-<!--        <attr name="highlightEnable" format="boolean"/>-->
-<!--        <attr name="highlightColor" format="color"/>-->
     </declare-styleable>
-
-    <declare-styleable name="AvatarImageView">
-        <attr name="aiv_borderColor" format="color"/>
-        <attr name="aiv_borderWidth" format="dimension"/>
-        <attr name="aiv_initials" format="string"/>
-    </declare-styleable>
-
-
 </resources>

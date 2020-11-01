@@ -1,6 +1,5 @@
 package ru.skillbranch.devintensive.ui.adapters
 
-import android.icu.text.UnicodeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +7,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_chat_single.*
 import kotlinx.android.synthetic.main.item_user_list.*
+import kotlinx.android.synthetic.main.item_user_list.sv_indicator
+import ru.skillbranch.devintensive.App
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.models.data.ChatItem
+import ru.skillbranch.devintensive.extensions.spToPixels
+import ru.skillbranch.devintensive.models.TextDrawable
 import ru.skillbranch.devintensive.models.data.UserItem
+import ru.skillbranch.devintensive.utils.Utils
 
 class UserAdapter(val listener: (UserItem) -> Unit) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
     var items: List<UserItem> = listOf()
@@ -70,5 +74,6 @@ class UserAdapter(val listener: (UserItem) -> Unit) : RecyclerView.Adapter<UserA
             iv_selected.visibility = if(user.isSelected) View.VISIBLE else View.GONE
             itemView.setOnClickListener{listener.invoke(user)}
         }
+
     }
 }

@@ -5,11 +5,11 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import ru.skillbranch.devintensive.repositories.PreferencesRepository
 
-class App: Application() {
-    companion object {
-        private var instance: App? = null
+class App : Application() {
+    companion object{
+        private var instance:App? = null
 
-        fun applicationContext(): Context {
+        fun applicationContext() : Context {
             return instance!!.applicationContext
         }
     }
@@ -22,6 +22,7 @@ class App: Application() {
         super.onCreate()
         PreferencesRepository.getAppTheme().also {
             AppCompatDelegate.setDefaultNightMode(it)
+            //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 }

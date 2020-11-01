@@ -1,16 +1,16 @@
-  package ru.skillbranch.devintensive.ui.group
+package ru.skillbranch.devintensive.ui.group
 
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.children
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -18,10 +18,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.activity_group.*
+import kotlinx.android.synthetic.main.activity_group.toolbar
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.data.UserItem
 import ru.skillbranch.devintensive.ui.adapters.UserAdapter
 import ru.skillbranch.devintensive.viewmodels.GroupViewModel
+import java.security.AccessController.getContext
 
 class GroupActivity : AppCompatActivity() {
 
@@ -31,7 +33,6 @@ class GroupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
-
         initToolbar()
         initViews()
         initViewModel()
@@ -72,10 +73,11 @@ class GroupActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
+
     private fun initViews() {
         usersAdapter = UserAdapter { viewModel.handleSelectedItem(it.id) }
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        getDrawable(R.drawable.divider)?.let { divider.setDrawable(it) }
+        divider.setDrawable(getDrawable(R.drawable.divider)!!)
         with(rv_user_list) {
             adapter = usersAdapter
             layoutManager = LinearLayoutManager(this@GroupActivity)
@@ -110,7 +112,7 @@ class GroupActivity : AppCompatActivity() {
             isCloseIconVisible = true
             tag = user.id
             isClickable = true
-            // //closeIconTint = ColorStateList.valueOf(Color.WHITE)
+            //closeIconTint = ColorStateList.valueOf(Color.WHITE)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 /*chipBackgroundColor = getColorStateList(getChipColor())
                 closeIconTint = getColorStateList(getCloseIconColor())*/
@@ -127,7 +129,7 @@ class GroupActivity : AppCompatActivity() {
 
             }
 
-            // Добавить реализацию для лолипопы
+            //Добавить реализацию для лолипопы
             /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 chipBackgroundColor = ColorStateList.valueOf(getColor(R.color.color_primary_light))
             }*/
@@ -143,7 +145,7 @@ class GroupActivity : AppCompatActivity() {
         chip_group.visibility = if(listUsers.isEmpty()) View.GONE else View.VISIBLE
 
         val users = listUsers
-            .associateBy { user -> user.id to user }
+            .associate { user -> user.id to user }
             .toMutableMap()
 
         val views = chip_group.children.associate { view -> view.tag to view }

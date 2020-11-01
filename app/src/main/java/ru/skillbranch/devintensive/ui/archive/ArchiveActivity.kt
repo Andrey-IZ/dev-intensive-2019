@@ -46,7 +46,7 @@ class ArchiveActivity : AppCompatActivity() {
         }
         //ДЗ кастом материал декоратор time: 1:13 tutorial 5
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        getDrawable(R.drawable.divider)?.let { divider.setDrawable(it) }
+        divider.setDrawable(getDrawable(R.drawable.divider)!!)
         val touchCallback = ArchiveItemTouchHelperCallback(chatAdapter) {
             viewModel.restoreFromArchive(it.id)
 

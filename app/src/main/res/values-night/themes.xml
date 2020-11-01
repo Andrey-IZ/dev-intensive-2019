@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
@@ -22,6 +23,6 @@
         <item name="colorChipCloseIcon">@color/color_gray</item>
         <item name="colorEvaluationStart">@color/color_item_dark</item>
         <item name="colorEvaluationEnd">@color/color_toolbar_night</item>
-
     </style>
+
 </resources>

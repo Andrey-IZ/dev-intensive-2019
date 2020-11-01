@@ -1,115 +1,129 @@
 package ru.skillbranch.devintensive.extensions
 
-import java.lang.IllegalStateException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.ceil
+import kotlin.math.absoluteValue
 
 const val SECOND = 1000L
 const val MINUTE = 60 * SECOND
 const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
 
-fun Date.format(pattern: String? = "HH:mm:ss dd.MM.yy"): String {
+val Int.sec get() = this * SECOND
+val Int.min get() = this * MINUTE
+val Int.hour get() = this * HOUR
+val Int.day get() = this * DAY
+
+fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy"): String {
     val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
     return dateFormat.format(this)
 }
 
-
-fun Date.shortFormat(): String? {
-    val pattern = if (this.isSameDay(Date())) "HH:mm" else "dd.MM.yy"
+fun Date.shortFormat(): String {
+    val pattern = if(this.isSameDay(Date())) "HH:mm" else "dd.MM.yy"
     val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
-    return dateFormat.format(this)
+    return  dateFormat.format(this)
 }
 
 fun Date.isSameDay(date: Date): Boolean {
     val day1 = this.time / DAY
-    val day2 = this.time / DAY
-    return day1 == day2
+    val day2 = date.time / DAY
+    return  day1 == day2
 }
 
 fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
     var time = this.time
+
     time += when (units) {
         TimeUnits.SECOND -> value * SECOND
         TimeUnits.MINUTE -> value * MINUTE
         TimeUnits.HOUR -> value * HOUR
         TimeUnits.DAY -> value * DAY
     }
-
     this.time = time
     return this
 }
 
-fun Date.humanizeDiff(date:Date = Date()): String {
-    fun timeConvertStr(time:Long, message:String) = if (time >= 0) "через $message" else "$message назад"
+fun Date.humanizeDiff(date: Date = Date()): String {
+    val duration = ((date.time - 200)/1000 - (this.time - 200)/1000) * 1000
 
-    val time = this.time - date.time
-
-    return when(val timeAbs = abs(time)) {
-        in 0..SECOND ->             "только что"
-        in SECOND..45*SECOND ->     timeConvertStr(time, "несколько секунд")
-        in 45*SECOND..75*SECOND ->  timeConvertStr(time,"минуту")
-        in 75*SECOND..45*MINUTE ->  {
-            val value = ceil((timeAbs / MINUTE.toDouble())).toInt()
-            timeConvertStr(time, TimeUnits.MINUTE.plural(value))
+    return if (duration >= 0) {
+        when (duration) {
+            in 0.sec..1.sec -> "только что"
+            in 2.sec..45.sec -> "несколько секунд назад"
+            in 46.sec..75.sec -> "минуту назад"
+            in 76.sec..45.min -> "${TimeUnits.MINUTE.plural((duration.absoluteValue / MINUTE).toInt())} назад"
+            in 46.min..75.min -> "час назад"
+            in 76.min..22.hour -> "${TimeUnits.HOUR.plural((duration.absoluteValue / HOUR).toInt())} назад"
+            in 23.hour..26.hour -> "день назад"
+            in 27.hour..360.day -> "${TimeUnits.DAY.plural((duration.absoluteValue / DAY).toInt())} назад"
+            else -> "более года назад"
         }
-        in 45*MINUTE..75*MINUTE ->  timeConvertStr(time,"час")
-        in 75* MINUTE..22*HOUR ->   {
-            val value = ceil((timeAbs / HOUR.toDouble())).toInt()
-            timeConvertStr(time, TimeUnits.HOUR.plural(value))
+    } else {
+        when (duration) {
+            in (-45).sec..0.sec -> "через несколько секунд"
+            in (-75).sec..(-45).sec -> "через минуту"
+            in (-45).min..(-75).sec -> "через ${TimeUnits.MINUTE.plural((duration.absoluteValue / MINUTE).toInt())}"
+            in (-75).min..(-45).min -> "через час"
+            in (-22).hour..(-75).min -> "через ${TimeUnits.HOUR.plural((duration.absoluteValue / HOUR).toInt())}"
+            in (-26).hour..(-22).hour -> "через день"
+            in (-360).day..(-26).hour -> "через ${TimeUnits.DAY.plural((duration.absoluteValue / DAY).toInt())}"
+            else -> "более чем через год"
         }
-        in 22* HOUR..26*HOUR ->     timeConvertStr(time,"день")
-        in 26* HOUR..360*DAY ->     {
-            val value = ceil((timeAbs / DAY.toDouble())).toInt()
-            timeConvertStr(time, TimeUnits.DAY.plural(value))
-        }
-        else ->                     if (time >= 0) "более чем через год" else "более года назад"
-
     }
 }
 
 enum class TimeUnits {
-    SECOND {
-        override fun plural(value:Int):String {
-            val text = when(getNumber(value)) {
-                1 -> "секунду"
-                in 2..4 -> "секунды"
-                else -> "секунд"
-            }
-            return "$value $text"
-    }},
-    MINUTE {
-        override fun plural(value:Int):String {
-            val text = when(getNumber(value)) {
-                1 -> "минуту"
-                in 2..4 -> "минуты"
-                else -> "минут"
-            }
-            return "$value $text"
-        }},
-    HOUR {
-        override fun plural(value:Int):String {
-            val text = when(getNumber(value)) {
-                1 -> "час"
-                in 2..4 -> "часа"
-                else -> "часов"
-            }
-            return "$value $text"
-        }},
-    DAY {
-        override fun plural(value:Int):String {
-            val text = when(getNumber(value)) {
-                1 -> "день"
-                in 2..4 -> "дня"
-                else -> "дней"
-            }
-            return "$value $text"
-        }};
-    abstract fun plural(value:Int):String
-
-    protected fun getNumber(value:Int): Int {
-        return if (value >= 10) ceil(((value / 10.0) % 1)*10).toInt() else value
+    SECOND,
+    MINUTE,
+    HOUR,
+    DAY;
+    fun plural(value: Int): String {
+        return when(this) {
+            SECOND -> secondAsPlurals(value * 1L)
+            MINUTE -> minuteAsPlurals(value * 1L)
+            HOUR -> hourAsPlurals(value * 1L)
+            DAY -> dayAsPlurals(value * 1L)
+        }
     }
+}
+
+private fun secondAsPlurals(value: Long) = when(value.asPlurals) {
+    Plurals.ONE -> "$value секунду"
+    Plurals.FEW -> "$value секунды"
+    Plurals.MANY -> "$value секунд"
+}
+
+private fun minuteAsPlurals(value: Long) = when(value.asPlurals) {
+    Plurals.ONE -> "$value минуту"
+    Plurals.FEW -> "$value минуты"
+    Plurals.MANY -> "$value минут"
+}
+
+private fun hourAsPlurals(value: Long) = when(value.asPlurals) {
+    Plurals.ONE -> "$value час"
+    Plurals.FEW -> "$value часа"
+    Plurals.MANY -> "$value часов"
+}
+
+private fun dayAsPlurals(value: Long) = when(value.asPlurals) {
+    Plurals.ONE -> "$value день"
+    Plurals.FEW -> "$value дня"
+    Plurals.MANY -> "$value дней"
+}
+
+val Long.asPlurals
+    get() = when {
+
+        this % 100L in 5L..20L -> Plurals.MANY
+        this % 10L == 1L -> Plurals.ONE
+        this % 10L in 2L..4L -> Plurals.FEW
+
+        else -> Plurals.MANY
+    }
+
+enum class Plurals {
+    ONE,
+    FEW,
+    MANY
 }

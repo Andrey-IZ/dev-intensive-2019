@@ -4,50 +4,58 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import ru.skillbranch.devintensive.R
+import kotlin.math.min
 
 class AvatarImageView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0)
-    : CircleImageView(context, attrs, defStyleAttr) {
-    private lateinit var paint: Paint
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : CircleImageView(context, attrs, defStyleAttr) {
+    private lateinit var textPaint: Paint
     private lateinit var bitmap: Bitmap
     private lateinit var canvas: Canvas
 
     fun setInitials(initials: String) {
-        paint = Paint().apply {
+        val textBounds = Rect()
+        val backgroundBounds = RectF()
+        backgroundBounds.set(0f, 0f, layoutParams.width.toFloat(), layoutParams.height.toFloat())
+
+        textPaint = Paint().apply {
             isAntiAlias = true
-            this.textSize = layoutParams.height/2.33f
+            this.textSize = (min(layoutParams.width, layoutParams.height) / 2.33f)
             color = Color.WHITE
             textAlign = Paint.Align.CENTER
         }
-
-        val textBounds = Rect()
-        paint.getTextBounds(initials, 0, initials.length, textBounds)
-        val backgroundBounds = RectF()
-        backgroundBounds.set(0f, 0f, layoutParams.width.toFloat(), layoutParams.height.toFloat())
-        val textBottom = backgroundBounds.centerY() - textBounds.exactCenterY()
+        textPaint.getTextBounds(initials, 0, initials.length, textBounds)
 
         bitmap = Bitmap.createBitmap(layoutParams.width, layoutParams.height, Bitmap.Config.ARGB_8888)
-        bitmap.eraseColor(getColorFromInitials(initials))
+        bitmap.eraseColor(getInitialsBackgroundColor(initials))
         canvas = Canvas(bitmap)
-        canvas.drawText(initials, backgroundBounds.centerX(), textBottom , paint)
+        canvas.drawText(initials, backgroundBounds.centerX(),  backgroundBounds.centerY() - textBounds.exactCenterY(), textPaint)
         setImageBitmap(bitmap)
         invalidate()
     }
 
-    private fun getColorFromInitials(initials: String) : Int {
-        return when(initials.hashCode()%10) {
-            0 -> resources.getColor(R.color.color_avatar1, context.theme)
-            1 -> resources.getColor(R.color.color_avatar2, context.theme)
-            2 -> resources.getColor(R.color.color_avatar3, context.theme)
-            3 -> resources.getColor(R.color.color_avatar4, context.theme)
-            4 -> resources.getColor(R.color.color_avatar5, context.theme)
-            5 -> resources.getColor(R.color.color_avatar6, context.theme)
-            6 -> resources.getColor(R.color.color_avatar7, context.theme)
-            7 -> resources.getColor(R.color.color_avatar8, context.theme)
-            8 -> resources.getColor(R.color.color_avatar9, context.theme)
-            else -> resources.getColor(R.color.color_avatar10, context.theme)
+    private fun getInitialsBackgroundColor(initials: String): Int {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
+            return when (initials.hashCode() % 6) {
+                0 -> resources.getColor(R.color.color_avatar_1, context.theme)
+                1 -> resources.getColor(R.color.color_avatar_2, context.theme)
+                2 -> resources.getColor(R.color.color_avatar_3, context.theme)
+                3 -> resources.getColor(R.color.color_avatar_4, context.theme)
+                4 -> resources.getColor(R.color.color_avatar_5, context.theme)
+                else -> resources.getColor(R.color.color_avatar_6, context.theme)
+            }
+        } else {
+            when (initials.hashCode() % 6) {
+                0 -> resources.getColor(R.color.color_avatar_1)
+                1 -> resources.getColor(R.color.color_avatar_2)
+                2 -> resources.getColor(R.color.color_avatar_3)
+                3 -> resources.getColor(R.color.color_avatar_4)
+                4 -> resources.getColor(R.color.color_avatar_5)
+                else -> resources.getColor(R.color.color_avatar_6)
+            }
         }
     }
 }

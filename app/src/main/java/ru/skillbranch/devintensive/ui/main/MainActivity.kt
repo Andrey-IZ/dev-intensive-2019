@@ -1,32 +1,36 @@
 package ru.skillbranch.devintensive.ui.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.skillbranch.devintensive.R
-import ru.skillbranch.devintensive.models.data.ChatType
 import ru.skillbranch.devintensive.ui.adapters.ChatAdapter
 import ru.skillbranch.devintensive.ui.adapters.ChatItemTouchHelperCallback
-import ru.skillbranch.devintensive.ui.archive.ArchiveActivity
 import ru.skillbranch.devintensive.ui.group.GroupActivity
 import ru.skillbranch.devintensive.viewmodels.MainViewModel
+import android.widget.TextView
+import ru.skillbranch.devintensive.models.data.ChatType
+import ru.skillbranch.devintensive.ui.archive.ArchiveActivity
+
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         initToolbar()
         initViews()
         initViewModel()
@@ -69,14 +73,15 @@ class MainActivity : AppCompatActivity() {
                     val snackBarView = snackbar.view
                     snackBarView.background = getDrawable(R.drawable.bg_snackbar)
                     val textView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                    textView.setTextColor(getSnackBarColor())
+                    textView.setTextColor(getSnackbarColor())
                     snackbar.show()
                 }
             }
+
         }
         //ДЗ кастом материал декоратор time: 1:13 tutorial 5
         val divider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        getDrawable(R.drawable.divider)?.let { divider.setDrawable(it) }
+        divider.setDrawable(getDrawable(R.drawable.divider)!!)
         val touchCallback = ChatItemTouchHelperCallback(chatAdapter) {
             viewModel.addToArchive(it.id)
 
@@ -87,8 +92,10 @@ class MainActivity : AppCompatActivity() {
             val snackBarView = snackbar.view
             snackBarView.background = getDrawable(R.drawable.bg_snackbar)
             val textView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-            textView.setTextColor(getSnackBarColor())
+            textView.setTextColor(getSnackbarColor())
             snackbar.show()
+
+
         }
         val touchHelper = ItemTouchHelper(touchCallback)
         touchHelper.attachToRecyclerView(rv_chat_list)
@@ -107,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        viewModel.getChatData().observe(this, { chatAdapter.updateData(it) })
+        viewModel.getChatData().observe(this, Observer { chatAdapter.updateData(it) })
     }
 
     private fun getAccentColor(): Int {
@@ -115,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         theme.resolveAttribute(R.attr.colorAccent, tv, true)
         return tv.data
     }
-    private fun getSnackBarColor(): Int {
+    private fun getSnackbarColor(): Int {
         val tv = TypedValue()
         theme.resolveAttribute(R.attr.colorSnackBarText, tv, true)
         return tv.data

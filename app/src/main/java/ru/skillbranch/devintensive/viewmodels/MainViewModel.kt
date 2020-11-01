@@ -1,23 +1,48 @@
 package ru.skillbranch.devintensive.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import ru.skillbranch.devintensive.extensions.mutableLiveData
+import ru.skillbranch.devintensive.models.data.Chat
 import ru.skillbranch.devintensive.models.data.ChatItem
+import ru.skillbranch.devintensive.models.data.UserItem
 import ru.skillbranch.devintensive.repositories.ChatRepository
+
 
 class MainViewModel: ViewModel() {
     private val query = mutableLiveData("")
-    private val chatRepository = ChatRepository
-    private val chats = Transformations.map(chatRepository.loadChats()) { chats ->
+    private val chatRepository =  ChatRepository
+    /*private val chats = Transformations.map(chatRepository.loadChats()) { chats ->
         return@map chats.filter { !it.isArchived }
-                .map { it.toChatItem() }
-                .sortedBy { it.id.toInt() }
+            .map { it.toChatItem() }
+            .sortedBy { it.id.toInt() }
+    }*/
+    private val chats: LiveData<List<ChatItem>> = Transformations.map(chatRepository.loadChats()) { chats ->
+        Log.d("M_MainViewModel", "test")
+        return@map chats.groupBy { it.isArchived }
+            .flatMap { (isArchived, chats) ->
+                if(isArchived) listOf(Chat.archivedToChatItem(chats))
+                else chats.map { it.toChatItem() }
+            }
+            .sortedBy { it.id.toInt() }
     }
 
-    fun getChatData(): LiveData<List<ChatItem>> {
+   /* fun getChatData() : LiveData<List<ChatItem>> {
+        val result = MediatorLiveData<List<ChatItem>>()
+        val searchChats = mutableListOf<ChatItem>()
+        val filterF = {
+            val queryStr = query.value!!
+            //searchChats.addAll(chats.value!!)
+
+            result.value = if (queryStr.isEmpty()) searchChats
+            else searchChats.filter { it.title.contains(queryStr, true) }
+        }
+        result.addSource(chats) { filterF.invoke() }
+        result.addSource(query) { filterF.invoke() }
+        return result
+    }*/
+
+    fun getChatData() : LiveData<List<ChatItem>> {
         val result = MediatorLiveData<List<ChatItem>>()
 
         val filterF = {
@@ -33,26 +58,13 @@ class MainViewModel: ViewModel() {
         return result
     }
 
-//    private fun loadChats(): List<ChatItem> {
-//        val chats = chatRepository.loadChats()
-//        return chats.map { it.toChatItem() }
-//                .sortedBy { it.id.toInt() }
-//    }
-
-//    fun addItems() {
-//        val newItems = DataGenerator.generateChatsWithOffset(chats.value!!.size, 5).map { it.toChatItem() }
-//        val copy = chats.value!!.toMutableList()
-//        copy.addAll(newItems)
-//        chats.value = copy.sortedBy { it.id.toInt() }
-//}
-
-    fun addToArchive(chatId:String) {
+    fun addToArchive(chatId: String) {
         val chat = chatRepository.find(chatId)
         chat ?: return
         chatRepository.update(chat.copy(isArchived = true))
     }
 
-    fun restoreFromArchive(chatId:String) {
+    fun restoreFromArchive(chatId: String) {
         val chat = chatRepository.find(chatId)
         chat ?: return
         chatRepository.update(chat.copy(isArchived = false))
@@ -62,6 +74,20 @@ class MainViewModel: ViewModel() {
         query.value = text
     }
 
-
+    /*private fun getArchiveItem(): ChatItem {
+        Log.d("M_MainViewModel", "${chatRepository.getArchiveUnreadMessageCount()}")
+        return ChatItem(
+            "none",
+            "",
+            "",
+            "Архив чатов",
+            chatRepository.getShortDescription(),
+            chatRepository.getArchiveUnreadMessageCount(),
+            chatRepository.getLastDate(),
+            false,
+            ChatType.ARCHIVE,
+            chatRepository.getLastAuthor()
+        )
+    }*/
 
 }
