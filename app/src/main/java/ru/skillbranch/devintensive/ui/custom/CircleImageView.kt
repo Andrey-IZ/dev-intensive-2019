@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import kotlin.math.min
 
-class CircleImageView @JvmOverloads constructor (
+open class CircleImageView @JvmOverloads constructor (
         context: Context,
         attrs: AttributeSet? = null,
         defStyledAttrs: Int = 0

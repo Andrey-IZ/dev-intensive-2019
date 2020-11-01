@@ -14,8 +14,6 @@ import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_profile.*
 import ru.skillbranch.devintensive.R
 import ru.skillbranch.devintensive.models.Profile
-import ru.skillbranch.devintensive.ui.custom.TextBitmapBuilder
-import ru.skillbranch.devintensive.utils.Utils
 import ru.skillbranch.devintensive.viewmodels.ProfileViewModel
 
 class ProfileActivity : AppCompatActivity() {
@@ -113,24 +111,13 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun updateAvatar(profile: Profile){
-        Utils.toInitials(profile.firstName, profile.lastName)?.let {
-            if (it != userInitials) {
-                val avatar = getAvatarBitmap(it)
-                iv_avatar.setImageBitmap(avatar)
+        profile.toMap().also {
+            for((k,v) in viewFields) {
+                v.text = it[k].toString()
             }
-        } ?: iv_avatar.setImageResource(R.drawable.avatar_default)
-    }
-
-    private fun getAvatarBitmap(text: String): Bitmap {
-        val color = TypedValue()
-        theme.resolveAttribute(R.attr.colorAccent, color, true)
-
-        return TextBitmapBuilder(iv_avatar.layoutParams.width, iv_avatar.layoutParams.height)
-                .setBackgroundColor(color.data)
-                .setText(text)
-                .setTextSize(Utils.convertSpToPx(this, 48))
-                .setTextColor(Color.WHITE)
-                .build()
+            iv_avatar.setInitials(it["initials"].toString())
+            iv_avatar.setBorderWidth(2)
+        }
     }
 
     private fun showCurrentMode(isEdit: Boolean) {
